@@ -1,0 +1,35 @@
+# Local reproducible environment.
+#
+#   docker compose run --rm ingestion                      # = msl --help
+#   docker compose run --rm ingestion ingest all           # universe + full price history
+#   docker compose run --rm ingestion ingest all --mode incremental
+#   docker compose up research                              # JupyterLab on http://localhost:8888
+#
+# `./data` is bind-mounted so raw Parquet lands on the host and survives the container.
+# Secrets and settings come from `.env` (copy `.env.example`; `.env` is git-ignored).
+
+services:
+  ingestion:
+    build:
+      context: .
+      target: ingestion
+    image: market-signal-lab/ingestion:local
+    env_file: .env
+    environment:
+      MSL_DATA_DIR: /app/data
+    volumes:
+      - ./data:/app/data
+
+  research:
+    build:
+      context: .
+      target: research
+    image: market-signal-lab/research:local
+    env_file: .env
+    environment:
+      MSL_DATA_DIR: /app/data
+    volumes:
+      - ./:/app            # live-edit code, notebooks and sql/ from the host
+      - /app/.venv         # never shadow the image's environment with a host .venv
+    ports:
+      - "8888:8888"
