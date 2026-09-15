@@ -6,7 +6,7 @@
 #   docker compose up research                              # JupyterLab on http://localhost:8888
 #
 # `./data` is bind-mounted so raw Parquet lands on the host and survives the container.
-# Secrets and settings come from `.env` (copy `.env.example`; `.env` is git-ignored).
+# Settings/secrets come from `.env` if present (copy `.env.example`; `.env` is git-ignored).
 
 services:
   ingestion:
@@ -14,7 +14,9 @@ services:
       context: .
       target: ingestion
     image: market-signal-lab/ingestion:local
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false   # a fresh clone works without one; copy .env.example to override defaults
     environment:
       MSL_DATA_DIR: /app/data
     volumes:
@@ -25,7 +27,9 @@ services:
       context: .
       target: research
     image: market-signal-lab/research:local
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false   # a fresh clone works without one; copy .env.example to override defaults
     environment:
       MSL_DATA_DIR: /app/data
     volumes:
