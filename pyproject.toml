@@ -13,6 +13,7 @@ dependencies = [
     "yfinance>=0.2.50",
     "requests>=2.32",
     "lxml>=5",
+    "databricks-sdk>=0.40",
 ]
 
 [project.scripts]
